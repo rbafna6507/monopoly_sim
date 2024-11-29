@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '../ui/card';
 import { DollarSign, User, Building2 } from 'lucide-react';
 
-const API_URL = 'http://127.0.0.1:5000/api';
+const API_URL = 'http://157.230.229.122:5000/api';
 
 const PROPERTY_DETAILS = {
   1: { name: 'Mediterranean Ave', color: 'brown', price: 60 },
