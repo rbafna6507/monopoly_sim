@@ -16,6 +16,8 @@ class MonopolySimulator:
         
     def initialize_properties(self, landing_frequencies: Dict[int, float]) -> List[Property]:
         # property values in the order of the board
+        # TODO: use keywrod arguments bc this is confusing
+        #NOTE: docstrings
         properties = [
             Property("Mediterranean Avenue", 1, 60, [2, 10, 30, 90, 160, 250], "brown"),
             Property("Baltic Avenue", 3, 60, [4, 20, 60, 180, 320, 450], "brown"),
@@ -53,6 +55,9 @@ class MonopolySimulator:
             nearby opponent properties, and current cash"""
         value = 0.0
         
+        # TODO: make these comments for each hueristic better
+        # TODO: beef up docstring
+        
         # incentivize higher landing frequencies using exponential scaling (and penalizing lower than average frequencies)
         # frequencies below average (0.025) get penalized, above get boosted
         landing_freq_multiplier = (property.landing_frequency / 0.025) ** 2
@@ -73,7 +78,7 @@ class MonopolySimulator:
             value *= (1.0 - (0.1 * opponent_props_nearby)) 
             
         # consider how much cash the player has - penalize value if low on cash
-        cash_ratio = player.money / 1500  # Compare to starting money
+        cash_ratio = player.money / 1500 
         if cash_ratio < 0.5:  
             value *= 0.8 
             
@@ -97,10 +102,16 @@ class MonopolySimulator:
 
     def simulate_turn(self, player: Player, iterations: int = 1000) -> Tuple[bool, float]:
         """create hueristics to estimate buying vs. not buying the current property"""
+        # TODO: beef up docstring
+        # TODO: add a chaos factor
+        # TODO: more comments everywhere
+        
+        
         current_property = next((p for p in self.properties if p.position == player.position), None)
         if not current_property or not player.can_afford(current_property.price):
             return False, 0.0
 
+        
         print('making a parallel universe to buy ', current_property.name)
         buy_universe = copy.deepcopy(player)
         no_buy_universe = copy.deepcopy(player)
@@ -152,6 +163,7 @@ class MonopolySimulator:
 
     def make_decision(self, player: Player) -> Tuple[bool, str]:
         """decide to buy the property or not, and give reasoning"""
+        
         current_property = next((p for p in self.properties if p.position == player.position), None)
         if not current_property:
             return False, "No property to buy at current position"
@@ -252,6 +264,7 @@ class MonopolySimulator:
     def handle_rent_payment(self, player: Player, current_property: Property, rent_amount: int) -> List[str]:
         """rent payment logic with property selling if player is out of money, 
             return logged actions of player"""
+            
         log = []
         log.append(f"{player.name} must pay ${rent_amount} rent to {current_property.owner.name}")
         

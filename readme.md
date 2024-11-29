@@ -1,13 +1,14 @@
-## Monopoly Simulation
+# Monopoly Simulation
 
 This repository contains two main parts: a Flask API and a React frontend.
 
 This is a simulation of Monopoly using a Monte Carlo approach to determine the optimal strategy for buying properties.
 
-# Introduction
+## Introduction
 
+blah context
 
-# Getting Started
+### Getting Started
 
 To start, make sure you have python version 3.9.7 (or newer) and the latest version of this repository cloned locally. 
 
@@ -21,8 +22,9 @@ Once the virtual environment is created, run the following commands while in the
 ```
 . venv/bin/activate
 pip install -r requirements.txt
-Now that all the necessary packages are installed, you're ready to run the API locally.
+
 ```
+Now that all the necessary packages are installed, you're ready to run the API locally.
 
 To start the API on a local development server on http://127.0.0.1:5000 (port 5000) run:
 

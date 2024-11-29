@@ -6,10 +6,13 @@ import threading
 import time
 import queue
 
+"""api bitch"""
+
 app = Flask(__name__)
 CORS(app, origins="*", supports_credentials=True, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 
 # game state
+# TODO: comment tf out of this
 game_state = {
     'simulator': None,
     'game_log': [],
@@ -71,7 +74,7 @@ def game_loop():
                     'game_log': game_update,
                     'ai_log': turn_logs
                 })
-        time.sleep(.3)
+        time.sleep(.4)
 
 @app.route('/api/start', methods=['GET', 'POST'])
 def start_game():
@@ -98,6 +101,8 @@ def start_game():
         game_state['is_running'] = True
         
         # need to run game loop in thread so that i keeps running after call.
+        
+        # TODO: double check thread behavior - make sure it isn't blocking
         thread = threading.Thread(target=game_loop)
         thread.daemon = True
         thread.start()
@@ -108,6 +113,8 @@ def start_game():
 @app.route('/api/stop', methods=['GET','POST'])
 def stop_game():
     if game_state['is_running']:
+        # TODO: end thread
+        # TODO: use asyncio? see pros/cons -
         game_state['is_running'] = False
         return jsonify({'status': 'success', 'message': 'Game stopped'})
     return jsonify({'status': 'error', 'message': 'No game running'})
