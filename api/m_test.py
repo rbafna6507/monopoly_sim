@@ -101,32 +101,40 @@ class MonopolySimulator:
 
 
     def simulate_turn(self, player: Player, iterations: int = 1000) -> Tuple[bool, float]:
-        """create hueristics to estimate buying vs. not buying the current property"""
-        # TODO: beef up docstring
-        # TODO: add a chaos factor
-        # TODO: more comments everywhere
+        """Simulate potential outcomes of buying vs not buying the current property.
         
-        
+        Args:
+            player: The player making the decision
+            iterations: Number of simulation iterations to run
+            
+        Returns:
+            Tuple of (should_buy: bool, value_difference: float)
+        """
         current_property = next((p for p in self.properties if p.position == player.position), None)
         if not current_property or not player.can_afford(current_property.price):
             return False, 0.0
 
+        # Create parallel universes for both scenarios
+        buy_universe = copy.deepcopy(self)  # Copy entire game state
+        no_buy_universe = copy.deepcopy(self)
         
-        print('making a parallel universe to buy ', current_property.name)
-        buy_universe = copy.deepcopy(player)
-        no_buy_universe = copy.deepcopy(player)
+        # Get the player instances in the parallel universes
+        buy_player = next(p for p in buy_universe.players if p.name == player.name)
+        no_buy_player = next(p for p in no_buy_universe.players if p.name == player.name)
         
-        buy_universe.pay(current_property.price)
-        current_property_copy = copy.deepcopy(current_property)
-        current_property_copy.owner = buy_universe
-        buy_universe.properties.append(current_property_copy)
+        # Execute the purchase in buy universe
+        buy_property = next(p for p in buy_universe.properties if p.position == current_property.position)
+        buy_player.pay(buy_property.price)
+        buy_property.owner = buy_player
+        buy_player.properties.append(buy_property)
         
         buy_score = 0
         no_buy_score = 0
         
         for _ in range(iterations):
-            buy_result = self.simulate_future_turns(buy_universe, 40)
-            no_buy_result = self.simulate_future_turns(no_buy_universe, 40)
+            # Simulate both universes with full game state
+            buy_result = self.simulate_future_turns(buy_universe, buy_player, 20)
+            no_buy_result = self.simulate_future_turns(no_buy_universe, no_buy_player, 20)
             
             buy_score += buy_result
             no_buy_score += no_buy_result
@@ -136,28 +144,53 @@ class MonopolySimulator:
         
         return avg_buy_score > avg_no_buy_score, avg_buy_score - avg_no_buy_score
 
-
-    def simulate_future_turns(self, player: Player, num_turns: int) -> float:
-        """simulate future turns and return a score based on money and property value"""
-        sim_player = copy.deepcopy(player)
+    def simulate_future_turns(self, game_state: 'MonopolySimulator', player: Player, num_turns: int) -> float:
+        """Simulate future turns considering the full game state.
+        
+        Args:
+            game_state: Copy of the full game simulator
+            player: The player being simulated
+            num_turns: Number of turns to simulate
+            
+        Returns:
+            float: Score based on simulation outcome
+        """
         score = 0.0
         
         for _ in range(num_turns):
-            roll = random.randint(1, 6) + random.randint(1, 6)
-            sim_player.position = (sim_player.position + roll) % 40  
+            # Roll dice and move
+            roll1, roll2 = random.randint(1, 6), random.randint(1, 6)
+            roll = roll1 + roll2
+            player.position = (player.position + roll) % 40
             
-            for prop in sim_player.properties:
-                expected_landings = prop.landing_frequency * (len(self.players) - 1)
-                expected_rent = prop.rent[0]  
-                if sim_player.owns_complete_set(prop.color_group):
-                    expected_rent *= 2  
-                
-                score += expected_landings * expected_rent
+            # Handle property landing
+            current_property = next((p for p in game_state.properties if p.position == player.position), None)
+            if current_property and current_property.owner and current_property.owner != player:
+                rent = current_property.rent[current_property.houses]
+                if current_property.owner.owns_complete_set(current_property.color_group):
+                    rent *= 2
+                if player.money >= rent:
+                    player.pay(rent)
+                    current_property.owner.receive(rent)
         
-        score += sim_player.calculate_net_worth()
-        for prop in sim_player.properties:
-            score += self.calculate_expected_property_value(prop, sim_player)
+        # Calculate final score based on:
+        # 1. Current cash
+        score += player.money
+        
+        # 2. Property values (including development potential)
+        for prop in player.properties:
+            property_value = prop.price
+            if player.owns_complete_set(prop.color_group):
+                property_value *= 1.5  # Premium for complete sets
+            score += property_value
             
+            # Add potential future rent income
+            expected_landings = prop.landing_frequency * (len(game_state.players) - 1) * (num_turns / 40)
+            expected_rent = prop.rent[prop.houses]
+            if player.owns_complete_set(prop.color_group):
+                expected_rent *= 2
+            score += expected_landings * expected_rent
+        
         return score
 
 
