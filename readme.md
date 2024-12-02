@@ -6,7 +6,20 @@ This is a simulation of Monopoly using a Monte Carlo approach to determine the o
 
 ## Introduction
 
-blah context
+This Monopoly simulation models Monopoly using a Monte Carlo (predicted future value using hueristics) approach to determine the optimal strategy for buying properties. The simulation utilizes websockets to allow real time updates to the simulation's React-based frontend.
+
+Broadly, this simulation focuses on the core rules of Monopoly: deciding when to buy and sell properties to optimize for cash and becoming a monopoly. The game terminates when all players except one have gone bankrupt.
+
+Key features of the simulation include:
+- Cash reserve management
+- Property aquisition
+- Risk-adjusted purchasing decisions
+- Real-time updates to the frontend
+
+The Flask backend handles all game logic and statistical calculations, while the React frontend provides a chart-based and monopoly board visualization of the simulation. It also details the simulation's decision making engine and why specific actions were taken.
+
+The backend contains two main components: `monopoly_sim`, which contains the logic for running the simulation, and `sim_socket`, which contains the websocket logic for the frontend to interface with the simulation. The React frontend lives in the `/monopoly_simulation` directory.
+
 
 ### Getting Started
 
@@ -43,16 +56,31 @@ And to finally run the react app on http://127.0.0.1:3000 (port 3000), you can r
 
 You now have a fully set up environment, and will be able to use both the Flask API and the React frontend.
 
-# Capabilities
+### Take Aways + Next Steps
 
-# Looking Forward
+Because of the time contraints of this problem, a few tradeoffs were made:
 
-Because this was a hacky side project, there are many things that could be improved or done differently.
+1) Simulation Functionality
 
-- The simulation could be sped up by using parallelism.
+I decided to forgo some of the key monopoly rules to keep the simulation simple. For example, I did not implement the following:
+- Houses
+- Hotels
+- Mortagaging
+- Community Chest and Chance card spaces
 
-Definititely an optimization I would implement if I had more time - both because of personal interests and because it allows me to run more iterations, meaning a more accurate simulation. 
+Given more time, I would have liked to implement these features, particularly house building and mortaging as they offer another layer of complexity and strategy to the simution.
 
-- The simulation could be made more accurate by increasing the number of iterations.
-- The strategy could be improved by using a more sophisticated algorithm.
-- 
+
+2) Strategy
+
+While the strategy I implemented has complexity and determines whether a property is a 'good buy' based on a number of critera, there is still room to make it more robust and accurate. Potential improvements include: fully cloning game state and running 40 turns into the future to determine a more realistic 'property value'.
+
+3) Frontend
+
+The frontend serves as a visualiation tool for the meat behind the project. Given more time, I'd like to polish it off, make it more interactive, and add some more charts and statistics. In particular, modifying the websocket logic to allow for multiple concurrent connections is something that is non-negotiable for a polished application.
+
+
+
+Thanks for reading.
+
+&ndash; Rohan
