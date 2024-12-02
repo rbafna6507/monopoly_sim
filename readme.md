@@ -41,7 +41,7 @@ Now that all the necessary packages are installed, you're ready to run the API l
 
 To start the API on a local development server on http://127.0.0.1:5000 (port 5000) run:
 
-`python api/mp_api.py`
+`python api/sim_socket.py`
 
 
 Next you'll want to start the React app to interface with the API.
