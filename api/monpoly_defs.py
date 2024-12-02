@@ -51,3 +51,24 @@ class Player:
     def calculate_net_worth(self) -> int:
         property_value = sum(p.price + (p.houses * (p.price // 2)) for p in self.properties)
         return self.money + property_value
+    
+    
+def property_to_dict(prop):
+    return {
+        'name': prop.name,
+        'position': prop.position,
+        'price': prop.price,
+        'rent': prop.rent,
+        'color_group': prop.color_group,
+        'landing_frequency': prop.landing_frequency,
+        'houses': prop.houses,
+        'owner': prop.owner.name if prop.owner else None
+    }
+
+def player_to_dict(player):
+    return {
+        'name': player.name,
+        'money': player.money,
+        'position': player.position,
+        'properties': [property_to_dict(prop) for prop in player.properties]
+    }
